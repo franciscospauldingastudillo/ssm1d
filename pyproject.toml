@@ -1,0 +1,21 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssm1d"
+version = "0.1.0"
+description = "A simple spectral model for radiative cooling"
+authors = [
+    {name = "Francisco Spaulding-Astudillo", email = "fspauldinga@ucla.edu"}
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
