@@ -18,7 +18,7 @@ pip install git+https://github.com/franciscospauldingastudillo/ssm1d.git
 
 You'll need to download the parameters-class package to use the SSM1D. You can install it directly from GitHub:
 ```bash
-pip install git+https://github.com/franciscospauldingastudillo/parameters-class.git
+pip install git+ssh://git@github.com/franciscospauldingastudillo/ssm1d.git
 ```
 
 ## 🚀 Usage
