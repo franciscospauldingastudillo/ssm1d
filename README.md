@@ -1,8 +1,8 @@
-# SSM1D: Simple Spectral Model (1D)
+# SSM1D: One-Dimensional Simple Spectral Model 
 
-**SSM1D** is a lightweight, idealized model of radiative cooling based on spectral water vapor absorption features. It computes analytic or semi-analytic expressions for band-specific radiative coefficients using a reduced-order model framework.
+**SSM1D** is a lightweight, idealized model of radiative cooling based on spectral water vapor absorption features. It solves an analytic form of the cooling-to-space approximation of the full longwave radiative transfer equation under clear-sky conditions.
 
-This package is modular and extensible, and is designed to work in tandem with [`parameters-class`](https://github.com/franciscospauldingastudillo/parameters-class), a utility package for defining thermodynamic profiles and model parameters.
+This package is designed to work in tandem with [`parameters-class`](https://github.com/franciscospauldingastudillo/parameters-class), a utility package for defining thermodynamic profiles and model parameters.
 
 ---
 
@@ -28,7 +28,7 @@ from ssm1d import get_SSM1D, get_custom_atm
 from parameters import parameters
 ```
 
-### Example: Run the SSM1D for the water vapor rotation band
+### Example: Run the SSM1D
 ```python
 # Step 0: Define the case and the resolution
 # specify what gases and CIA-pairs to include (see generate_case)
