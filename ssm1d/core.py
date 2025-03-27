@@ -141,7 +141,7 @@ def nu1vib_from_rootsolve_new(target_blah:float,par:Dict[str,float]):
         #print(f'error: no roots to be found')
         return np.nan
 
-def get_SSM1D(dataset: Dict[str, float]) -> Dict[str, float]:
+def get_SSM1D(par,dataset: Dict[str, float]) -> Dict[str, float]:
     #############################################################
     # kj: absorption coefficient at band-maximum of best-fit line (m2/kg)
     # lj0: exponential falloff coefficient of best-fit line (cm-1)
@@ -151,18 +151,16 @@ def get_SSM1D(dataset: Dict[str, float]) -> Dict[str, float]:
     # Pj_co: period of error oscillation (cm-1) of continuum-only component
     # Aj_co: amplitude of error oscillation of continuum-only component
     #############################################################
-    par = dataset['par']
     if par.band == 'wv-rot-right':
-        return _compute_ssm1d_rot_right(dataset)
+        return _compute_ssm1d_rot_right(par,dataset)
     elif par.band == 'wv-vib-rot':
-        return _compute_ssm1d_vib_rot(dataset)
+        return _compute_ssm1d_vib_rot(par,dataset)
     else:
         raise ValueError(f"Unrecognized band: {par.band}")
 
-def _compute_ssm1d_rot_right(dataset):
+def _compute_ssm1d_rot_right(par,dataset):
     #############################################################
     # Unpack the inputs
-    par = dataset['par']
     cp, z, T, p, rho, RH, Gamma = (dataset['RFM'][key] for key in ['cp', 'z', 'T', 'p', 'rho', 'RH', 'Gamma']) 
     #############################################################
     # use a root solver to find the emitting wavenumber
@@ -212,10 +210,9 @@ def _compute_ssm1d_rot_right(dataset):
     #############################################################
     return {'nu1rot':nu1rot,'z1rot':z,'piB1rot':piB1rot,'Hrot':Hrot,'Boverz':Boverz,'lrot':lrot1}
 
-def _compute_ssm1d_vib_rot(dataset):
+def _compute_ssm1d_vib_rot(par,dataset):
     #############################################################
     # Unpack the inputs
-    par = dataset['par']
     cp, z, T, p, rho, RH, Gamma = (dataset['RFM'][key] for key in ['cp', 'z', 'T', 'p', 'rho', 'RH', 'Gamma'])
     #############################################################
     # use a root solver to find the emitting wavenumber
