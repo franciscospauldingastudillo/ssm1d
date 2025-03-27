@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: ssm1d
+Version: 0.1.0
+Summary: A simple spectral model for radiative cooling
+Author-email: Francisco Spaulding-Astudillo <fspauldinga@ucla.edu>
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: matplotlib

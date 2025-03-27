@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+setup.py
+ssm1d/__init__.py
+ssm1d/atm.py
+ssm1d/core.py
+ssm1d.egg-info/PKG-INFO
+ssm1d.egg-info/SOURCES.txt
+ssm1d.egg-info/dependency_links.txt
+ssm1d.egg-info/requires.txt
+ssm1d.egg-info/top_level.txt
