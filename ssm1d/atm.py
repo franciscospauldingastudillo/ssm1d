@@ -40,11 +40,12 @@ def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
     ktrp = int(np.amin(np.where(T==par.Ttrp)))
     ztrp = par.z[ktrp]
     # Custom RH
-    if par.uniform is True:
+    if par.uniform:
         RH       = np.ones([len(par.z)])*par.RHmid
-        RH[mask] = 0
+        RH[mask] = 0 # stratospheric mask
         alpha_lt = 0
         alpha_gt = 0
+        print('initializing with uniform RH')
     else:
         RH  = np.ones([len(par.z)])*par.RHs
         RH[mask] = 0 # stratospheric mask
@@ -52,6 +53,7 @@ def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
         RH[0:(ktrp+1)] = foo['RH']
         alpha_lt       = foo['alpha_lt']
         alpha_gt       = foo['alpha_gt']
+        print('initializing with non-uniform RH')
     
     # Solve for environmental pressure and density 
     rho  = np.zeros_like(par.z)
@@ -83,9 +85,9 @@ def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
         # molar mixing ratio of H2O
         if k<=ktrp: # tropospheric value set by Clausius-Clapeyron
             pH2O    = RH[k]*get_esat_over_l(par,T[k])
-            xH2O[k] = pH2O/p[k]
+            xH2O[k] = max(pH2O/p[k],1e-10)
         else: # stratospheric mixing ratio fixed to tropopause value
-            xH2O[k] = xH2O[ktrp]
+            xH2O[k] = max(xH2O[ktrp],1e-10)
             # calculate the "implied" relative humidity
             RH[k]   = xH2O[k]*p[k]/get_esat_over_l(par,T[k])
         # Compute dry-air scaling factor (applies to N2, O2, and CO2)

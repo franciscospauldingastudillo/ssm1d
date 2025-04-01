@@ -143,6 +143,8 @@ def nu1vib_from_rootsolve_new(target_blah:float,par:Dict[str,float]):
 
 def get_SSM1D(par,dataset: Dict[str, float]) -> Dict[str, float]:
     #############################################################
+    # The parameters class defines the following attributes:
+    #############################################################
     # kj: absorption coefficient at band-maximum of best-fit line (m2/kg)
     # lj0: exponential falloff coefficient of best-fit line (cm-1)
     # nuj: wavenumber at band-maximum (~150 or ~1500 cm-1)
