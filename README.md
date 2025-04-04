@@ -24,8 +24,9 @@ pip install git+ssh://git@github.com/franciscospauldingastudillo/ssm1d.git
 ## 🚀 Usage
 
 ```python
-from ssm1d import get_SSM1D, get_custom_atm
-from parameters import parameters
+import ssm1d
+import parameters
+import rfmtools
 ```
 
 ### Example: Run the SSM1D
@@ -40,40 +41,31 @@ def generate_args(exp, gases, ciapairs, **thermo):
     return {'exp': exp, **{f'gas{i+1}': gas for i, gas in enumerate(gases)}, 'valid_ciapairs': ciapairs, **thermo}
 args = generate_args('earth',gases,ciapairs,RHs=0.75,RHmid=0.54,RHtrp=0.75,uniform=1,Ts=300,Tmid=250,Ttrp=200)
         
-# create a class instance and generate an RFM case from argument dictionary
-par = parameters()
+# create a class instance and generate an RFM case from argument dictionary (300K = 7.1 K/km; 315K = 5.0 K/km)
+par = parameters.parameters(Gamma=6.5e-3)
 par.generate_case(**args)
 
-# vertical resolutions
+# vertical resolution
 RFM      = np.arange(par.z[0],par.z[-1],1e2)
-RFMi     = (RFM[1::]+RFM[:-1])/2
 
 # default dataset
 # z ~ m, p ~ Pa, T ~ K, Gamma ~ K/m, RH~unitless, hr~W/m3, srhr~cm*W/m3
 # srtau~unitless, zsrtau1~m, crnus~cm-1, crsrtau~unitless, crzsrtau1~m
 # piBsr~W*cm/m^2, piBbar~W/m^2
 dataset  = ({'RFM':{
-                    'z':RFM,'p':{},'T':{},'rho':{},'Gamma':{},'RH':{}, 'cp':{}, # THERMODYNAMICS
+                    'z':{},'p':{},'T':{},'rho':{},'Gamma':{},'RH':{}, 'cp':{}, # THERMODYNAMICS
                      'alpha_lt':{}, 'alpha_gt':{}, # RELHUM PARAMS
                     'hr':{},'srhr':{}, # HEATING RATES
                     'srtau':{},'zsrtau1':{},'crnus':{},'crsrtau':{},'crzsrtau1':{}, # OPTICAL DEPTH
                    'piBsr':{},'piBbar':{}}, # BLACKBODY FLUX
              'SSM1D-LLA':{'z':RFM,'hr':{}},
-             'SSM1D-QLLA':{'z':RFM,'hr':{}},
-             'par':par}) 
+             'SSM1D-QLLA':{'z':RFM,'hr':{}}}) 
 
 # Step 1: Generate custom atmospheric profiles (p,T,z,x) at RFM and RFMi resolution
-dat1,dat2 = get_custom_atm(par,RFM,RFMi)
-#
-dataset['RFM']['p']      = dat1['p']
-dataset['RFM']['T']      = dat1['T']
-dataset['RFM']['RH']     = dat1['RH']
-dataset['RFM']['rho']    = dat1['rho']
-dataset['RFM']['Gamma']  = dat1['Gamma']
-dataset['RFM']['cp']     = dat1['cp']
-dataset['RFM']['cpmol']  = dat1['cpmol']
-dataset['RFM']['alpha_lt'] = dat1['alpha_lt']
-dataset['RFM']['alpha_gt'] = dat1['alpha_gt']
+dat1 = ssm1d.atm.get_custom_atm(par, RFM)
+keys = ['p', 'T', 'RH', 'rho', 'Gamma', 'cp', 'cpmol', 'alpha_lt', 'alpha_gt','z']
+for key in keys:
+    dataset['RFM'][key] = dat1[key]
 
 # dynamically add molar mixing ratios to the dataset (signals to rfmtools how to build the RFM experiments)
 for gas in gases:
