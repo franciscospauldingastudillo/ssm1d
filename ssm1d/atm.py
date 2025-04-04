@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import interp1d
-def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
+def get_custom_atm(par,vres1=np.arange(0,3e4,1e2)):
     # scalar inputs: mid-tropospheric RH (RHmid) and temeprature (Tmid) and boolean option for uniform RH
     # Vertical resolution can also be specified to facilitate RFM vs analytical model. 
     #############################################################
@@ -42,13 +42,13 @@ def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
     # Custom RH
     if par.uniform:
         RH       = np.ones([len(par.z)])*par.RHmid
-        RH[mask] = 0 # stratospheric mask
+        #RH[mask] = 0 # stratospheric mask
         alpha_lt = 0
         alpha_gt = 0
         print('initializing with uniform RH')
     else:
-        RH  = np.ones([len(par.z)])*par.RHs
-        RH[mask] = 0 # stratospheric mask
+        RH  = np.ones([len(par.z)])*par.RHtrp
+        #RH[mask] = 0 # stratospheric mask
         foo = get_optimal_RH(T[0:(ktrp+1)], par.Ts, par.Tmid, par.Ttrp, par.RHs, par.RHmid, par.RHtrp)
         RH[0:(ktrp+1)] = foo['RH']
         alpha_lt       = foo['alpha_lt']
@@ -125,29 +125,26 @@ def get_custom_atm(par,vres1=np.arange(0,3e4,1e2),vres2=np.arange(0,3e4,1e2)):
         if k<(len(par.z)-1):
             p[k+1] = p[k]*np.exp(arg)
     #############################################################
-    # Export fields in their desired vertical resolution (vres1,vres2)
+    # Export fields in their desired vertical resolution (vres1)
     def interpolate(var, vres):
         # func = interp1d(par.z,var,kind)(input of function)
         return interp1d(par.z, var, kind='cubic')(vres)
-    T1, T2         = interpolate(T, vres1), interpolate(T, vres2)
-    Gamma1, Gamma2 = interpolate(Gamma, vres1), interpolate(Gamma, vres2)
-    p1, p2         = interpolate(p, vres1), interpolate(p, vres2)
-    rho1, rho2     = interpolate(rho, vres1), interpolate(rho, vres2)
-    RH1, RH2       = interpolate(RH, vres1), interpolate(RH, vres2)
-    xN2_1, xN2_2   = interpolate(xN2, vres1), interpolate(xN2, vres2)
-    xO2_1, xO2_2   = interpolate(xO2, vres1), interpolate(xO2, vres2)
-    xH2O_1, xH2O_2 = interpolate(xH2O, vres1), interpolate(xH2O, vres2)
-    xCO2_1, xCO2_2 = interpolate(xCO2, vres1), interpolate(xCO2, vres2)
-    cp1, cp2       = interpolate(cp, vres1), interpolate(cp, vres2)
-    cpmol1, cpmol2 = interpolate(cpmol, vres1), interpolate(cpmol, vres2)
+    T1         = interpolate(T, vres1)
+    Gamma1 = interpolate(Gamma, vres1)
+    p1         = interpolate(p, vres1)
+    rho1     = interpolate(rho, vres1)
+    RH1       = interpolate(RH, vres1)
+    xN2_1   = interpolate(xN2, vres1)
+    xO2_1   = interpolate(xO2, vres1)
+    xH2O_1 = interpolate(xH2O, vres1)
+    xCO2_1 = interpolate(xCO2, vres1)
+    cp1       = interpolate(cp, vres1)
+    cpmol1 = interpolate(cpmol, vres1)
     #############################################################
     dat1 = {'T': T1, 'p': p1, 'Gamma': Gamma1, 'rho': rho1, 'z': vres1, 'RH': RH1,
             'xN2': xN2_1, 'xO2': xO2_1, 'xH2O': xH2O_1, 'xCO2': xCO2_1, 'cp':cp1, 'cpmol':cpmol1,
            'alpha_lt':alpha_lt,'alpha_gt':alpha_gt}
-    dat2 = {'T': T2, 'p': p2, 'Gamma': Gamma2, 'rho': rho2, 'z': vres2, 'RH': RH2,
-            'xN2': xN2_2, 'xO2': xO2_2, 'xH2O': xH2O_2, 'xCO2': xCO2_2, 'cp':cp2, 'cpmol':cpmol2,
-           'alpha_lt':alpha_lt,'alpha_gt':alpha_gt}
     #############################################################
     # T(K), RH(unitless), p(Pa), Gamma(K/m), rho(kg/m3), x(molar mixing ratio)
     #############################################################
-    return dat1,dat2
+    return dat1
